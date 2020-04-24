@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken')
 module.exports = async (req, res, next) => {
   try {
     const { token } = req.cookies
+
     if (!token){
       res.status(401).json({ message: "Invalid credentials."})
     }

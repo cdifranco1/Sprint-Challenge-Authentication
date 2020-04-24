@@ -9,7 +9,6 @@ router.post('/register', async (req, res) => {
   try {
     const user = await Users.filterBy('username', creds.username).first()
   
-    console.log(user)
     if (user){
       return res.status(409).json({ message: "Username not available."})
     }
@@ -39,14 +38,19 @@ router.post('/login', async (req, res) => {
         role: "normal"
       }
 
-      const token = jwt.sign(payload, process.env.JWT_SECRET)
+      const jwtSecret = process.env.JWT_SECRET || 'testing'
 
-      res.cookie('token', token)
+      const token = jwt.sign(payload, jwtSecret)
 
-      return res.status(200).json({ message: `Welcome ${username}` })
+      return res.status(200).cookie('token', token).json({ message: `Welcome ${username}`})
+
+      // return res.status(200).json({
+      //   token: token,
+      //   message: `Welcome ${username}`
+      // })
     }
 
-    res.status(401).json({ message: "Invalid credentials."})
+    res.status(409).json({ message: "Invalid credentials."})
 
   } catch(err){
     res.status(500).json({ error: err.message})
